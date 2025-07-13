@@ -3,13 +3,17 @@ import axios from 'axios';
 
 export default function Login() {
   const [data, setData] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false); // NEW
 
   const handleLogin = async () => {
+    if (loading) return;
     try {
       if (!data.email || !data.password) {
         alert('Please enter both email and password');
         return;
       }
+
+      setLoading(true); // Start loading
 
       const res = await axios.post('https://expense-server-9t39.onrender.com/api/auth/login', data);
       localStorage.setItem('token', res.data.token);
@@ -19,6 +23,8 @@ export default function Login() {
       const msg = err.response?.data?.message || 'Login failed';
       alert(msg);
       console.error(msg);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -33,6 +39,7 @@ export default function Login() {
           value={data.email}
           onChange={(e) => setData({ ...data, email: e.target.value })}
           style={styles.input}
+          disabled={loading}
         />
 
         <input
@@ -41,9 +48,21 @@ export default function Login() {
           value={data.password}
           onChange={(e) => setData({ ...data, password: e.target.value })}
           style={styles.input}
+          disabled={loading}
         />
 
-        <button onClick={handleLogin} style={styles.button}>Login</button>
+        <button
+          onClick={handleLogin}
+          style={{
+            ...styles.button,
+            backgroundColor: loading ? '#6c757d' : '#0a66c2',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            opacity: loading ? 0.8 : 1
+          }}
+          disabled={loading}
+        >
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
 
         <p style={{ marginTop: '15px' }}>
           Don’t have an account? <a href="/" style={styles.link}>Sign up here</a>
@@ -78,12 +97,10 @@ const styles = {
   },
   button: {
     width: '100%',
-    backgroundColor: '#0a66c2',
     color: '#fff',
     padding: '10px',
     borderRadius: '6px',
     border: 'none',
-    cursor: 'pointer',
     fontWeight: 'bold',
   },
   link: {

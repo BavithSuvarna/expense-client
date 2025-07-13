@@ -3,13 +3,17 @@ import axios from 'axios';
 
 export default function Signup() {
   const [data, setData] = useState({ username: '', email: '', password: '' });
+  const [loading, setLoading] = useState(false); // NEW
 
   const handleSignup = async () => {
+    if (loading) return;
     try {
       if (!data.username || !data.email || !data.password) {
         alert('Please fill all fields');
         return;
       }
+
+      setLoading(true); // Start loading
 
       await axios.post('https://expense-server-9t39.onrender.com/api/auth/signup', data);
       alert('Signup successful! Please login now.');
@@ -18,13 +22,15 @@ export default function Signup() {
       const msg = err.response?.data?.message || 'Signup failed';
       alert(msg);
       console.error(msg);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h2 style={{ marginBottom: '20px' }}> Sign Up</h2>
+        <h2 style={{ marginBottom: '20px' }}>Sign Up</h2>
 
         <input
           type="text"
@@ -32,6 +38,7 @@ export default function Signup() {
           value={data.username}
           onChange={(e) => setData({ ...data, username: e.target.value })}
           style={styles.input}
+          disabled={loading}
         />
 
         <input
@@ -40,6 +47,7 @@ export default function Signup() {
           value={data.email}
           onChange={(e) => setData({ ...data, email: e.target.value })}
           style={styles.input}
+          disabled={loading}
         />
 
         <input
@@ -48,9 +56,21 @@ export default function Signup() {
           value={data.password}
           onChange={(e) => setData({ ...data, password: e.target.value })}
           style={styles.input}
+          disabled={loading}
         />
 
-        <button onClick={handleSignup} style={styles.button}>Sign Up</button>
+        <button
+          onClick={handleSignup}
+          style={{
+            ...styles.button,
+            backgroundColor: loading ? '#6c757d' : '#0a66c2',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            opacity: loading ? 0.8 : 1
+          }}
+          disabled={loading}
+        >
+          {loading ? 'Signing up...' : 'Sign Up'}
+        </button>
 
         <p style={{ marginTop: '15px' }}>
           Already have an account? <a href="/login" style={styles.link}>Login here</a>
@@ -85,12 +105,10 @@ const styles = {
   },
   button: {
     width: '100%',
-    backgroundColor: '#0a66c2',
     color: '#fff',
     padding: '10px',
     borderRadius: '6px',
     border: 'none',
-    cursor: 'pointer',
     fontWeight: 'bold',
   },
   link: {
