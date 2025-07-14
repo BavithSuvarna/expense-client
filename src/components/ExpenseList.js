@@ -95,28 +95,29 @@ export default function ExpenseList({ expenses, refresh }) {
             )}
 
             {editingId === e._id ? (
-              <div>
-                <button onClick={() => saveEdit(e._id)} style={{ marginRight: '6px' }}>Save</button>
-                <button onClick={cancelEdit}>Cancel</button>
-              </div>
-            ) : (
-              <div>
-                <button onClick={() => startEditing(e)} style={{ marginRight: '6px' }}>Edit</button>
-                <button
-                  onClick={() => deleteExpense(e._id)}
-                  style={{
-                    backgroundColor: '#ff4d4f',
-                    color: '#fff',
-                    border: 'none',
-                    padding: '5px 10px',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            )}
+  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end', marginTop: '8px' }}>
+    <button onClick={() => saveEdit(e._id)}>Save</button>
+    <button onClick={cancelEdit}>Cancel</button>
+  </div>
+) : (
+  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end', marginTop: '8px' }}>
+    <button onClick={() => startEditing(e)}>Edit</button>
+    <button
+      onClick={() => deleteExpense(e._id)}
+      style={{
+        backgroundColor: '#ff4d4f',
+        color: '#fff',
+        border: 'none',
+        padding: '5px 10px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+      }}
+    >
+      Delete
+    </button>
+  </div>
+)}
+
           </div>
         ))
       )}
