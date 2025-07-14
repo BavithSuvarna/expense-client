@@ -3,27 +3,45 @@ import axios from 'axios';
 
 export default function Signup() {
   const [data, setData] = useState({ username: '', email: '', password: '' });
-  const [loading, setLoading] = useState(false); // NEW
+  const [loading, setLoading] = useState(false);
 
   const handleSignup = async () => {
     if (loading) return;
+
+    if (!data.username || !data.email || !data.password) {
+      alert('Please fill all fields');
+      return;
+    }
+
+    setLoading(true);
+
+    const feedbackTimeout = setTimeout(() => {
+      alert("Server might be waking up. Please wait a few seconds...");
+    }, 3000);
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+
     try {
-      if (!data.username || !data.email || !data.password) {
-        alert('Please fill all fields');
-        return;
-      }
-
-      setLoading(true); // Start loading
-
-      await axios.post('https://expense-server-9t39.onrender.com/api/auth/signup', data);
+      await axios.post(
+        'https://expense-server-9t39.onrender.com/api/auth/signup',
+        data,
+        { signal: controller.signal }
+      );
+      clearTimeout(timeout);
+      clearTimeout(feedbackTimeout);
       alert('Signup successful! Please login now.');
       window.location.href = '/login';
     } catch (err) {
-      const msg = err.response?.data?.message || 'Signup failed';
+      clearTimeout(timeout);
+      clearTimeout(feedbackTimeout);
+      const msg = err.name === 'CanceledError'
+        ? 'Signup timed out. Please try again.'
+        : err.response?.data?.message || 'Signup failed';
       alert(msg);
       console.error(msg);
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
@@ -65,7 +83,7 @@ export default function Signup() {
             ...styles.button,
             backgroundColor: loading ? '#6c757d' : '#0a66c2',
             cursor: loading ? 'not-allowed' : 'pointer',
-            opacity: loading ? 0.8 : 1
+            opacity: loading ? 0.8 : 1,
           }}
           disabled={loading}
         >
@@ -73,7 +91,8 @@ export default function Signup() {
         </button>
 
         <p style={{ marginTop: '15px' }}>
-          Already have an account? <a href="/login" style={styles.link}>Login here</a>
+          Already have an account?{' '}
+          <a href="/login" style={styles.link}>Login here</a>
         </p>
       </div>
     </div>
@@ -113,6 +132,6 @@ const styles = {
   },
   link: {
     color: '#0a66c2',
-    textDecoration: 'none'
-  }
+    textDecoration: 'none',
+  },
 };

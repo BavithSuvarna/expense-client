@@ -3,28 +3,48 @@ import axios from 'axios';
 
 export default function Login() {
   const [data, setData] = useState({ email: '', password: '' });
-  const [loading, setLoading] = useState(false); // NEW
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (loading) return;
+
+    if (!data.email || !data.password) {
+      alert('Please enter both email and password');
+      return;
+    }
+
+    setLoading(true);
+
+    // Show feedback if delay exceeds 3 seconds
+    const feedbackTimeout = setTimeout(() => {
+      alert("Server might be waking up. Please wait a few seconds...");
+    }, 3000);
+
+    // Abort login if it takes too long
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+
     try {
-      if (!data.email || !data.password) {
-        alert('Please enter both email and password');
-        return;
-      }
-
-      setLoading(true); // Start loading
-
-      const res = await axios.post('https://expense-server-9t39.onrender.com/api/auth/login', data);
+      const res = await axios.post(
+        'https://expense-server-9t39.onrender.com/api/auth/login',
+        data,
+        { signal: controller.signal }
+      );
+      clearTimeout(timeout);
+      clearTimeout(feedbackTimeout);
       localStorage.setItem('token', res.data.token);
       alert('Login successful');
       window.location.href = '/dashboard';
     } catch (err) {
-      const msg = err.response?.data?.message || 'Login failed';
+      clearTimeout(timeout);
+      clearTimeout(feedbackTimeout);
+      const msg = err.name === 'CanceledError'
+        ? 'Login timed out. Please try again.'
+        : err.response?.data?.message || 'Login failed';
       alert(msg);
       console.error(msg);
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
@@ -57,7 +77,7 @@ export default function Login() {
             ...styles.button,
             backgroundColor: loading ? '#6c757d' : '#0a66c2',
             cursor: loading ? 'not-allowed' : 'pointer',
-            opacity: loading ? 0.8 : 1
+            opacity: loading ? 0.8 : 1,
           }}
           disabled={loading}
         >
@@ -65,7 +85,8 @@ export default function Login() {
         </button>
 
         <p style={{ marginTop: '15px' }}>
-          Don’t have an account? <a href="/" style={styles.link}>Sign up here</a>
+          Don’t have an account?{' '}
+          <a href="/" style={styles.link}>Sign up here</a>
         </p>
       </div>
     </div>
@@ -105,6 +126,6 @@ const styles = {
   },
   link: {
     color: '#0a66c2',
-    textDecoration: 'none'
-  }
+    textDecoration: 'none',
+  },
 };
