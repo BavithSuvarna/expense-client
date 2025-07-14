@@ -1,15 +1,23 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const COLORS = ['#0088FE', '#FFBB28', '#00C49F', '#FF8042', '#A020F0'];
+const COLORS = ['#00C49F', '#FF8042', '#FFBB28', '#0088FE', '#A020F0'];
 
-const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) => {
+const renderCustomizedLabel = (props) => {
+  const { cx, cy, midAngle, innerRadius, outerRadius, percent, index, name } = props;
   const RADIAN = Math.PI / 180;
-  const radius = innerRadius + (outerRadius - innerRadius) * 1.2;
+  const radius = outerRadius + 20; // pushes label outside the pie
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
   return (
-    <text x={x} y={y} fill="#000" textAnchor="middle" dominantBaseline="central" fontSize={10}>
+    <text
+      x={x}
+      y={y}
+      fill={COLORS[index % COLORS.length]}
+      textAnchor={x > cx ? 'start' : 'end'}
+      dominantBaseline="central"
+      fontSize={10}
+    >
       {`${name} (${(percent * 100).toFixed(0)}%)`}
     </text>
   );
@@ -27,14 +35,15 @@ export default function CategoryChart({ expenses }) {
   }));
 
   return (
-    <div style={{ width: '100%', maxWidth: '500px', height: '280px' }}>
+    <div style={{ width: '100%', maxWidth: '500px', height: '300px' }}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}
             cx="50%"
-            cy="45%"
-            outerRadius={75}
+            cy="50%"
+            outerRadius={80}
+            labelLine={true}
             label={renderCustomizedLabel}
             dataKey="value"
           >
