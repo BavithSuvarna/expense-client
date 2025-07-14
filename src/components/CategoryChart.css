@@ -1,0 +1,23 @@
+.chart-wrapper {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+.recharts-default-legend {
+  font-size: 13px;
+  text-align: center;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+@media (max-width: 480px) {
+  .chart-wrapper {
+    padding: 0 8px;
+  }
+
+  .recharts-default-legend {
+    font-size: 11px;
+  }
+}
