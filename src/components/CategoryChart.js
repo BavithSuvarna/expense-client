@@ -1,5 +1,4 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import './CategoryChart.css'; // NEW
 
 const COLORS = ['#0088FE', '#FFBB28', '#00C49F', '#FF8042', '#A020F0'];
 
@@ -15,14 +14,16 @@ export default function CategoryChart({ expenses }) {
   }));
 
   return (
-    <div className="chart-wrapper">
-      <ResponsiveContainer width="100%" height={260}>
+    // Inside CategoryChart.js
+      <div style={{ width: '100%', maxWidth: '400px', height: '235px' }}>
+      {/* <h3 style={{ textAlign: 'center' }}>📊 Category-wise Breakdown</h3> */}
+      <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}
             cx="50%"
             cy="45%"
-            outerRadius={70}
+            outerRadius={65}
             label={({ name, percent }) =>
               `${name} (${(percent * 100).toFixed(0)}%)`
             }

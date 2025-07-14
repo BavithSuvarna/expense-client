@@ -1,4 +1,4 @@
-.App {
+.App { 
   text-align: center;
 }
 
@@ -34,14 +34,5 @@
   }
   to {
     transform: rotate(360deg);
-  }
-}
-@media (max-width: 480px) {
-  body {
-    padding: 0 10px;
-  }
-
-  .App {
-    overflow-x: hidden;
   }
 }
