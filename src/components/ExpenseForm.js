@@ -54,6 +54,10 @@ export default function ExpenseForm({ refresh }) {
         onChange={handleChange}
         style={inputStyle}
         required
+         onFocus={(e) => e.target.style.color = '#000'}
+  onBlur={(e) => {
+    if (!form.date) e.target.style.color = '#888';
+  }}
       />
       <button type="submit" style={buttonStyle}>
         ➕ Add
