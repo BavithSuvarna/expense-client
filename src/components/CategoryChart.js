@@ -3,7 +3,7 @@ import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recha
 const COLORS = ['#00C49F', '#FF8042', '#FFBB28', '#0088FE', '#A020F0'];
 
 const renderCustomizedLabel = (props) => {
-  const { cx, cy, midAngle, innerRadius, outerRadius, percent, index, name } = props;
+  const { cx, cy, midAngle, outerRadius, percent, index, name } = props;
   const RADIAN = Math.PI / 180;
   const radius = outerRadius + 20; // pushes label outside the pie
   const x = cx + radius * Math.cos(-midAngle * RADIAN);

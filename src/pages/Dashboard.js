@@ -96,7 +96,8 @@ export default function Dashboard() {
   return (
     <div
       style={{
-        maxWidth: '1100px',
+        width: '95%',
+        maxWidth: '1350px',
         margin: '40px auto',
         padding: '30px',
         borderRadius: '12px',
@@ -145,10 +146,23 @@ export default function Dashboard() {
           <h3>Total Spent: <span style={{ color: '#0d47a1' }}>₹{totals.total}</span></h3>
           <h4 style={{ marginTop: '15px' }}>Category Breakdown:</h4>
           <ul style={{ paddingLeft: '20px' }}>
-            {Object.entries(totals.byCategory).map(([cat, amt]) => (
-              <li key={cat}><strong>{cat}</strong>: ₹{amt}</li>
-            ))}
-          </ul>
+  {Object.entries(totals.byCategory).map(([cat, amt]) => (
+    <li key={cat}>
+      <a
+        href={`/category/${encodeURIComponent(cat)}`}
+        style={{
+          color: '#0d47a1',
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          textDecoration: 'none'
+        }}
+      >
+        {cat}
+      </a>: ₹{amt}
+    </li>
+  ))}
+</ul>
+
         </div>
 
         <div style={{
