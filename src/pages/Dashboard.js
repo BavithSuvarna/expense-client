@@ -96,8 +96,8 @@ export default function Dashboard() {
   return (
     <div
       style={{
-        width: '100%',
-        maxWidth: '95%',
+        width: '95%',
+        maxWidth: '1350px',
         margin: '40px auto',
         padding: '30px',
         borderRadius: '12px',
