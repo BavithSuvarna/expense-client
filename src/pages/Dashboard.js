@@ -53,6 +53,27 @@ export default function Dashboard() {
     window.location.href = '/login';
   };
 
+  // NEW: Function to handle editing a category name
+  const handleEditCategory = async (oldCategory) => {
+    const newCategory = prompt(`Enter new name for category "${oldCategory}":`, oldCategory);
+
+    if (newCategory && newCategory.trim() !== '' && newCategory !== oldCategory) {
+      try {
+        const token = localStorage.getItem('token');
+        await axios.put(
+          `https://expense-server-9t39.onrender.com/api/expenses/category/${encodeURIComponent(oldCategory)}`,
+          { newCategory },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        // Refresh expenses to show the change everywhere
+        fetchExpenses();
+      } catch (err) {
+        console.error('Failed to update category', err);
+        alert('Failed to update category.');
+      }
+    }
+  };
+
   const getFilteredExpenses = () => {
     const now = new Date();
     return expenses.filter((exp) => {
@@ -146,23 +167,34 @@ export default function Dashboard() {
           <h3>Total Spent: <span style={{ color: '#0d47a1' }}>₹{totals.total}</span></h3>
           <h4 style={{ marginTop: '15px' }}>Category Breakdown:</h4>
           <ul style={{ paddingLeft: '20px' }}>
-  {Object.entries(totals.byCategory).map(([cat, amt]) => (
-    <li key={cat}>
-      <a
-        href={`/category/${encodeURIComponent(cat)}`}
-        style={{
-          color: '#0d47a1',
-          fontWeight: 'bold',
-          cursor: 'pointer',
-          textDecoration: 'none'
-        }}
-      >
-        {cat}
-      </a>: ₹{amt}
-    </li>
-  ))}
-</ul>
-
+            {Object.entries(totals.byCategory).map(([cat, amt]) => (
+              <li key={cat} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <a
+                  href={`/category/${encodeURIComponent(cat)}`}
+                  style={{
+                    color: '#0d47a1',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    textDecoration: 'none'
+                  }}
+                >
+                  {cat}
+                </a>: ₹{amt}
+                <button
+                  onClick={() => handleEditCategory(cat)}
+                  title={`Edit category "${cat}"`}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                  }}
+                >
+                  ✏️
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div style={{

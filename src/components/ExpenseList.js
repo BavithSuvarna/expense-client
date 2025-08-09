@@ -1,9 +1,16 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ExpenseList({ expenses, refresh }) {
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({ title: '', amount: '', category: '', date: '' });
+  const [categories, setCategories] = useState([]);
+
+  // Fetch unique categories from the existing expenses
+  useEffect(() => {
+    const uniqueCategories = [...new Set(expenses.map(exp => exp.category))];
+    setCategories(uniqueCategories);
+  }, [expenses]);
 
   const deleteExpense = async (id) => {
     const token = localStorage.getItem('token');
@@ -55,6 +62,7 @@ export default function ExpenseList({ expenses, refresh }) {
               border: '1px solid #ddd',
               borderRadius: '6px',
               backgroundColor: '#f7f7f7',
+              flexWrap: 'wrap'
             }}
           >
             {editingId === e._id ? (
@@ -64,27 +72,33 @@ export default function ExpenseList({ expenses, refresh }) {
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="Title"
-                  style={{ marginRight: '5px' }}
+                  style={{ marginRight: '5px', marginBottom: '5px' }}
                 />
                 <input
                   type="number"
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                   placeholder="Amount"
-                  style={{ marginRight: '5px' }}
+                  style={{ marginRight: '5px', marginBottom: '5px' }}
                 />
                 <input
+                  list="category-options"
                   type="text"
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   placeholder="Category"
-                  style={{ marginRight: '5px' }}
+                  style={{ marginRight: '5px', marginBottom: '5px' }}
                 />
+                <datalist id="category-options">
+                  {categories.map((cat, idx) => (
+                    <option key={idx} value={cat} />
+                  ))}
+                </datalist>
                 <input
                   type="date"
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  style={{ marginRight: '10px' }}
+                  style={{ marginRight: '10px', marginBottom: '5px' }}
                 />
               </div>
             ) : (
@@ -95,29 +109,28 @@ export default function ExpenseList({ expenses, refresh }) {
             )}
 
             {editingId === e._id ? (
-  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end', marginTop: '8px' }}>
-    <button onClick={() => saveEdit(e._id)}>Save</button>
-    <button onClick={cancelEdit}>Cancel</button>
-  </div>
-) : (
-  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end', marginTop: '8px' }}>
-    <button onClick={() => startEditing(e)}>Edit</button>
-    <button
-      onClick={() => deleteExpense(e._id)}
-      style={{
-        backgroundColor: '#ff4d4f',
-        color: '#fff',
-        border: 'none',
-        padding: '5px 10px',
-        borderRadius: '4px',
-        cursor: 'pointer',
-      }}
-    >
-      Delete
-    </button>
-  </div>
-)}
-
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end', marginTop: '8px' }}>
+                <button onClick={() => saveEdit(e._id)}>Save</button>
+                <button onClick={cancelEdit}>Cancel</button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end', marginTop: '8px' }}>
+                <button onClick={() => startEditing(e)}>Edit</button>
+                <button
+                  onClick={() => deleteExpense(e._id)}
+                  style={{
+                    backgroundColor: '#ff4d4f',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '5px 10px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            )}
           </div>
         ))
       )}
