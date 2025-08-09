@@ -190,7 +190,7 @@ export default function Dashboard() {
                     fontSize: '14px',
                   }}
                 >
-                  ✏️
+                  Edit 
                 </button>
               </li>
             ))}
